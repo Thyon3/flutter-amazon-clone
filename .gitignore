@@ -17,4 +17,19 @@ amazoneclonefrontend/.flutter-plugins-dependencies
 amazoneclonefrontend/.packages
 amazoneclonefrontend/build/
 amazoneclonefrontend/ios/Flutter/Flutter.podspec
+amazoneclonefrontend/ios/Pods/
 amazoneclonefrontend/android/.gradle/
+amazoneclonefrontend/android/app/build/
+amazoneclonefrontend/.metadata
+amazoneclonefrontend/pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Secrets
+config.env
+server/config.env
