@@ -11,6 +11,14 @@ import 'package:flutter_amazon_clone_bloc/features/auth/domain/usecases/sign_in.
 import 'package:flutter_amazon_clone_bloc/features/auth/domain/usecases/sign_up.dart';
 import 'package:flutter_amazon_clone_bloc/features/auth/domain/usecases/validate_token.dart';
 import 'package:flutter_amazon_clone_bloc/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/data/datasources/product_remote_data_source.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/data/repositories/product_repository_impl.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/domain/repositories/product_repository.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/domain/usecases/get_deal_of_the_day.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/domain/usecases/get_products_by_category.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/domain/usecases/search_products.dart';
+import 'package:flutter_amazon_clone_bloc/features/product/presentation/bloc/product_bloc.dart';
+import 'package:flutter_amazon_clone_bloc/features/cart/presentation/bloc/cart_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -23,8 +31,10 @@ Future<void> init() async {
   // Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl());
 
-  // Auth Feature
+  // Features
   _initAuth();
+  _initProduct();
+  _initCart();
 }
 
 void _initAuth() {
@@ -60,4 +70,39 @@ void _initAuth() {
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
   );
+}
+
+void _initProduct() {
+  // Bloc
+  sl.registerFactory(
+    () => ProductBloc(
+      getProductsByCategoryUseCase: sl(),
+      searchProductsUseCase: sl(),
+      getDealOfTheDayUseCase: sl(),
+    ),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(() => GetProductsByCategory(sl()));
+  sl.registerLazySingleton(() => SearchProducts(sl()));
+  sl.registerLazySingleton(() => GetDealOfTheDay(sl()));
+
+  // Repository
+  sl.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<ProductRemoteDataSource>(
+    () => ProductRemoteDataSourceImpl(client: sl()),
+  );
+}
+
+void _initCart() {
+  // Bloc
+  sl.registerFactory(() => CartBloc());
 }

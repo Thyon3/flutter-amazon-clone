@@ -38,6 +38,12 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => di.sl<AuthBloc>(),
         ),
+        BlocProvider(
+          create: (_) => di.sl<ProductBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => di.sl<CartBloc>(),
+        ),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
