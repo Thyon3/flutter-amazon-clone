@@ -6,6 +6,8 @@ import cors from "cors";
 import authRouter from "./routes/auth";
 import adminRouter from "./routes/admin";
 import productRouter from "./routes/product";
+import userRouter from "./routes/user";
+import offersRouter from "./routes/offers";
 
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use(authRouter);
 app.use(adminRouter);
 app.use(productRouter);
+app.use(userRouter);
+app.use(offersRouter);
 
 mongoose
   .connect(DB)
