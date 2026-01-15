@@ -1,0 +1,20 @@
+﻿# General
+.DS_Store
+Thumbs.db
+*.log
+.env
+*.env
+
+# Node
+server/node_modules/
+server/dist/
+server/build/
+
+# Flutter/Dart
+amazoneclonefrontend/.dart_tool/
+amazoneclonefrontend/.flutter-plugins
+amazoneclonefrontend/.flutter-plugins-dependencies
+amazoneclonefrontend/.packages
+amazoneclonefrontend/build/
+amazoneclonefrontend/ios/Flutter/Flutter.podspec
+amazoneclonefrontend/android/.gradle/
