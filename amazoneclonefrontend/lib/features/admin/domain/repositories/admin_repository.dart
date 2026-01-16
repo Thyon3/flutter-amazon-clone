@@ -21,7 +21,7 @@ abstract class AdminRepository {
     required double price,
     required int quantity,
     required String category,
-    required List<String> images,
+    required List<dynamic> images, // Can be List<File> or List<String>
   });
   
   ResultVoid deleteProduct(String productId);
