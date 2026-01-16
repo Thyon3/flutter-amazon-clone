@@ -4,6 +4,7 @@ import 'package:flutter_amazon_clone_bloc/features/main/presentation/pages/main_
 import 'package:flutter_amazon_clone_bloc/features/search/presentation/pages/search_screen.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/pages/category_products_screen.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/pages/product_details_screen.dart';
+import 'package:flutter_amazon_clone_bloc/features/splash/presentation/pages/splash_screen.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -18,7 +19,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: splash,
-        builder: (context, state) => const AuthScreen(),
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
         path: auth,

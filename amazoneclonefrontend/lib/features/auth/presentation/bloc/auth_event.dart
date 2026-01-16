@@ -36,12 +36,10 @@ class SignInEvent extends AuthEvent {
 }
 
 class ValidateTokenEvent extends AuthEvent {
-  final String token;
-
-  const ValidateTokenEvent(this.token);
+  const ValidateTokenEvent();
 
   @override
-  List<Object?> get props => [token];
+  List<Object?> get props => [];
 }
 
 class GetUserDataEvent extends AuthEvent {
