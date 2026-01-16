@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Validate token and navigate accordingly
     final authBloc = sl<AuthBloc>();
-    authBloc.add(ValidateTokenEvent());
+    authBloc.add(const ValidateTokenEvent());
   }
 
   @override
