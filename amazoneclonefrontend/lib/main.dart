@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_amazon_clone_bloc/core/config/router/app_router.dart';
 import 'package:flutter_amazon_clone_bloc/core/theme/app_theme.dart';
 import 'package:flutter_amazon_clone_bloc/features/auth/presentation/bloc/auth_bloc.dart';
@@ -14,6 +16,11 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  
+  // Initialize HydratedBloc storage for state persistence
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
   
   // Load environment variables
   try {
