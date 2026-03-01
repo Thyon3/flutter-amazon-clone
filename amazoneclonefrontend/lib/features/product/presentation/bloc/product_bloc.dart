@@ -26,6 +26,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }) : super(ProductInitial()) {
     on<FetchProductsByCategoryEvent>(_onFetchProductsByCategory);
     on<SearchProductsEvent>(_onSearchProducts);
+    on<SearchProductsWithFiltersEvent>(_onSearchProductsWithFilters);
     on<FetchDealOfTheDayEvent>(_onFetchDealOfTheDay);
     on<RateProductEvent>(_onRateProduct);
     on<FetchProductReviewsEvent>(_onFetchProductReviews);
@@ -51,6 +52,22 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async {
     emit(ProductLoading());
 
+    final result = await searchProductsUseCase(event.query);
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (products) => emit(ProductsLoaded(products)),
+    );
+  }
+
+  Future<void> _onSearchProductsWithFilters(
+    SearchProductsWithFiltersEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+
+    // For now, use the existing search use case
+    // In a real implementation, you'd create a new use case for filtered search
     final result = await searchProductsUseCase(event.query);
 
     result.fold(

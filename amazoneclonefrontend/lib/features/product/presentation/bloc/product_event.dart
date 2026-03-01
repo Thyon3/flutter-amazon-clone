@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_amazon_clone_bloc/features/search/domain/models/search_filters.dart';
 part of 'product_bloc.dart';
 
 abstract class ProductEvent extends Equatable {
@@ -23,6 +25,19 @@ class SearchProductsEvent extends ProductEvent {
 
   @override
   List<Object?> get props => [query];
+}
+
+class SearchProductsWithFiltersEvent extends ProductEvent {
+  final String query;
+  final SearchFilters filters;
+
+  const SearchProductsWithFiltersEvent({
+    required this.query,
+    required this.filters,
+  });
+
+  @override
+  List<Object?> get props => [query, filters];
 }
 
 class FetchDealOfTheDayEvent extends ProductEvent {

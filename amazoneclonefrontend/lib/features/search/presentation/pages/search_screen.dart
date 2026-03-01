@@ -4,6 +4,8 @@ import 'package:flutter_amazon_clone_bloc/core/theme/app_colors.dart';
 import 'package:flutter_amazon_clone_bloc/core/utils/show_snackbar.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/widgets/product_card.dart';
+import 'package:flutter_amazon_clone_bloc/features/search/domain/models/search_filters.dart';
+import 'package:flutter_amazon_clone_bloc/features/search/presentation/widgets/filter_bottom_sheet.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -14,6 +16,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  SearchFilters _filters = const SearchFilters();
 
   @override
   void dispose() {
@@ -24,8 +27,32 @@ class _SearchScreenState extends State<SearchScreen> {
   void _performSearch() {
     final query = _searchController.text.trim();
     if (query.isNotEmpty) {
-      context.read<ProductBloc>().add(SearchProductsEvent(query));
+      context.read<ProductBloc>().add(
+        SearchProductsWithFiltersEvent(
+          query: query,
+          filters: _filters,
+        ),
+      );
     }
+  }
+
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => FilterBottomSheet(
+        initialFilters: _filters,
+        onApplyFilters: (filters) {
+          setState(() {
+            _filters = filters;
+          });
+          _performSearch();
+        },
+      ),
+    );
   }
 
   @override
@@ -48,13 +75,44 @@ class _SearchScreenState extends State<SearchScreen> {
               horizontal: 16,
               vertical: 12,
             ),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: _performSearch,
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_filters.hasAnyFilter)
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      'Active',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: _performSearch,
+                ),
+              ],
             ),
           ),
           onSubmitted: (value) => _performSearch(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.tune,
+              color: _filters.hasAnyFilter ? Colors.orange : Colors.white,
+            ),
+            onPressed: _showFilterBottomSheet,
+            tooltip: 'Filters',
+          ),
+        ],
       ),
       body: BlocConsumer<ProductBloc, ProductState>(
         listener: (context, state) {
