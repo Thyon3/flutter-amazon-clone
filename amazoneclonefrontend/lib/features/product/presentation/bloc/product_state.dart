@@ -37,3 +37,14 @@ class ProductError extends ProductState {
   @override
   List<Object?> get props => [message];
 }
+
+class ProductReviewsLoaded extends ProductState {
+  final List<RatingEntity> reviews;
+
+  const ProductReviewsLoaded(this.reviews);
+
+  @override
+  List<Object?> get props => [reviews];
+}
+
+class ProductRated extends ProductState {}
