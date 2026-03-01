@@ -31,15 +31,35 @@ router.get(
 
 router.post("/api/rate-product", auth, async (req: Request, res: Response) => {
   try {
-    const { id, rating } = req.body as { id: string; rating: number };
+    const { id, rating, review } = req.body as {
+      id: string;
+      rating: number;
+      review?: string;
+    };
     let product = await Product.findById(id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    product.ratings = product.ratings.filter((r) => String(r.userId) !== req.user);
-    product.ratings.push({ userId: req.user!, rating });
+    product.ratings = product.ratings.filter(
+      (r) => String(r.userId) !== req.user
+    );
+    product.ratings.push({ userId: req.user!, rating, review });
     product = await product.save();
 
     res.json(product);
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get("/api/product-reviews/:id", auth, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    // Filter out ratings that don't have a review
+    const reviews = product.ratings.filter((r) => r.review && r.review.length > 0);
+    res.json(reviews);
   } catch (e: any) {
     res.status(500).json({ error: e.message });
   }

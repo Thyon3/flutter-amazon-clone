@@ -16,6 +16,23 @@ router.get("/", auth, async (req: Request, res: Response) => {
   }
 });
 
+// Update user profile
+router.post("/api/update-profile", auth, async (req: Request, res: Response) => {
+  try {
+    const { name, email } = req.body as { name: string; email: string };
+    let user = await User.findById(req.user);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+
+    user = await user.save();
+    res.json(user);
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Add to cart
 router.post("/api/add-to-cart", auth, async (req: Request, res: Response) => {
   try {
