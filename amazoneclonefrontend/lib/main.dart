@@ -6,7 +6,9 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_amazon_clone_bloc/core/config/router/app_router.dart';
 import 'package:flutter_amazon_clone_bloc/core/theme/app_theme.dart';
+import 'package:flutter_amazon_clone_bloc/core/theme/theme_manager.dart';
 import 'package:flutter_amazon_clone_bloc/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_amazon_clone_bloc/features/comparison/presentation/bloc/comparison_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/core/di/injection_container.dart' as di;
 
 Future<void> main() async {
@@ -40,23 +42,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => di.sl<AuthBloc>(),
-        ),
-        BlocProvider(
-          create: (_) => di.sl<ProductBloc>(),
-        ),
-        BlocProvider(
-          create: (_) => di.sl<CartBloc>(),
-        ),
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Amazon Clone',
-        theme: AppTheme.light,
-        routerConfig: AppRouter.router,
+    return ChangeNotifierProvider(
+      create: (_) => ThemeManager(),
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => di.sl<AuthBloc>(),
+              ),
+              BlocProvider(
+                create: (_) => di.sl<ProductBloc>(),
+              ),
+              BlocProvider(
+                create: (_) => di.sl<CartBloc>(),
+              ),
+              BlocProvider(
+                create: (_) => ComparisonBloc(),
+              ),
+            ],
+            child: MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: 'Amazon Clone',
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: themeManager.themeMode,
+              routerConfig: AppRouter.router,
+            ),
+          );
+        },
       ),
     );
   }

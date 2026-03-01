@@ -23,4 +23,31 @@ class AppTheme {
       useMaterial3: true,
     );
   }
+
+  static ThemeData get dark {
+    return ThemeData(
+      fontFamily: 'AmazonEmber',
+      scaffoldBackgroundColor: AppColors.darkBackgroundColor,
+      bottomSheetTheme: const BottomSheetThemeData(
+        surfaceTintColor: AppColors.darkSurfaceColor,
+        backgroundColor: AppColors.darkSurfaceColor,
+        modalBackgroundColor: AppColors.darkSurfaceColor,
+      ),
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.secondaryColor,
+        secondary: AppColors.darkTeal,
+        surface: AppColors.darkSurfaceColor,
+        background: AppColors.darkBackgroundColor,
+      ),
+      appBarTheme: const AppBarTheme(
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.darkTeal,
+      ),
+      cardTheme: const CardTheme(
+        color: AppColors.darkCardColor,
+      ),
+      useMaterial3: true,
+    );
+  }
 }

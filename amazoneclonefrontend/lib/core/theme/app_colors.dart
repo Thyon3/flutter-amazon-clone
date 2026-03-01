@@ -24,4 +24,13 @@ class AppColors {
     Color.fromARGB(255, 125, 221, 216),
     Color.fromARGB(255, 93, 250, 238),
   ];
+
+  // Dark theme colors
+  static const Color darkBackgroundColor = Color(0xFF121212);
+  static const Color darkSurfaceColor = Color(0xFF1E1E1E);
+  static const Color darkCardColor = Color(0xFF2A2A2A);
+  static const Color darkSearchBarColor = Color(0xFF2C2C2C);
+  static const Color darkTeal = Color.fromRGBO(29, 99, 112, 1);
+  static const Color darkSelectedNavBarColor = Color(0xFF4FC3F7);
+  static const Color darkUnselectedNavBarColor = Color(0xFFB0BEC5);
 }
