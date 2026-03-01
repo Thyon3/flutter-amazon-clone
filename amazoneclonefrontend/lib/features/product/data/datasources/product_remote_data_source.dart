@@ -1,14 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_amazon_clone_bloc/core/constants/api_constants.dart';
-import 'package:flutter_amazon_clone_bloc/core/error/exceptions.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/data/models/product_model.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../../core/error/exceptions.dart';
+import '../models/product_model.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<List<ProductModel>> getProductsByCategory(String category, String token);
+  Future<List<ProductModel>> getProductsByCategory(
+    String category,
+    String token,
+  );
   Future<List<ProductModel>> searchProducts(String query, String token);
   Future<ProductModel> getDealOfTheDay(String token);
-  Future<void> rateProduct(String productId, double rating, String token);
+  Future<void> rateProduct(
+    String productId,
+    double rating,
+    String token, {
+    String? review,
+  });
+  Future<List<RatingModel>> getProductReviews(String productId, String token);
   Future<double> getUserRating(String productId, String token);
   Future<double> getAverageRating(String productId, String token);
   Future<int> getRatingCount(String productId, String token);
@@ -26,7 +35,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ) async {
     try {
       final response = await client.get(
-        Uri.parse('${ApiConstants.baseUrl}${ApiConstants.getProducts}?category=$category'),
+        Uri.parse(
+          '${ApiConstants.baseUrl}${ApiConstants.getProducts}?category=$category',
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
@@ -48,7 +59,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<List<ProductModel>> searchProducts(String query, String token) async {
     try {
       final response = await client.get(
-        Uri.parse('${ApiConstants.baseUrl}${ApiConstants.searchProducts}/$query'),
+        Uri.parse(
+          '${ApiConstants.baseUrl}${ApiConstants.searchProducts}/$query',
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
@@ -88,7 +101,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<void> rateProduct(String productId, double rating, String token) async {
+  Future<void> rateProduct(
+    String productId,
+    double rating,
+    String token, {
+    String? review,
+  }) async {
     try {
       final response = await client.post(
         Uri.parse('${ApiConstants.baseUrl}${ApiConstants.rateProduct}'),
@@ -96,10 +114,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
         },
-        body: jsonEncode({
-          'id': productId,
-          'rating': rating,
-        }),
+        body: jsonEncode({'id': productId, 'rating': rating, 'review': review}),
       );
 
       if (response.statusCode != 200) {
@@ -111,10 +126,37 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
+  Future<List<RatingModel>> getProductReviews(
+    String productId,
+    String token,
+  ) async {
+    try {
+      final response = await client.get(
+        Uri.parse('${ApiConstants.baseUrl}/api/product-reviews/$productId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList.map((json) => RatingModel.fromMap(json)).toList();
+      } else {
+        throw ServerException('Failed to load product reviews');
+      }
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
   Future<double> getUserRating(String productId, String token) async {
     try {
       final response = await client.get(
-        Uri.parse('${ApiConstants.baseUrl}${ApiConstants.getProductRating}/$productId'),
+        Uri.parse(
+          '${ApiConstants.baseUrl}${ApiConstants.getProductRating}/$productId',
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
@@ -135,7 +177,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<double> getAverageRating(String productId, String token) async {
     try {
       final response = await client.get(
-        Uri.parse('${ApiConstants.baseUrl}${ApiConstants.getAverageRating}/$productId'),
+        Uri.parse(
+          '${ApiConstants.baseUrl}${ApiConstants.getAverageRating}/$productId',
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
@@ -156,7 +200,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<int> getRatingCount(String productId, String token) async {
     try {
       final response = await client.get(
-        Uri.parse('${ApiConstants.baseUrl}${ApiConstants.getAverageRatingLength}/$productId'),
+        Uri.parse(
+          '${ApiConstants.baseUrl}${ApiConstants.getAverageRatingLength}/$productId',
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token,
