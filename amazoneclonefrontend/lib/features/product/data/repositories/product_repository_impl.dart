@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter_amazon_clone_bloc/core/error/exceptions.dart';
-import 'package:flutter_amazon_clone_bloc/core/error/failures.dart';
-import 'package:flutter_amazon_clone_bloc/core/network/network_info.dart';
-import 'package:flutter_amazon_clone_bloc/core/utils/typedef.dart';
-import 'package:flutter_amazon_clone_bloc/features/auth/data/datasources/auth_local_data_source.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/data/datasources/product_remote_data_source.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/domain/entities/product_entity.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/domain/repositories/product_repository.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/network/network_info.dart';
+import '../../../../core/utils/typedef.dart';
+import '../../../auth/data/datasources/auth_local_data_source.dart';
+import '../datasources/product_remote_data_source.dart';
+import '../../domain/entities/product_entity.dart';
+import '../../domain/repositories/product_repository.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
@@ -24,7 +24,9 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  ResultFuture<List<ProductEntity>> getProductsByCategory(String category) async {
+  ResultFuture<List<ProductEntity>> getProductsByCategory(
+    String category,
+  ) async {
     try {
       if (!await networkInfo.isConnected) {
         return const Left(NetworkFailure('No internet connection'));
@@ -35,7 +37,10 @@ class ProductRepositoryImpl implements ProductRepository {
         return const Left(UnauthorizedFailure('No authentication token'));
       }
 
-      final products = await remoteDataSource.getProductsByCategory(category, token);
+      final products = await remoteDataSource.getProductsByCategory(
+        category,
+        token,
+      );
       return Right(products);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -87,7 +92,11 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  ResultFuture<void> rateProduct(String productId, double rating) async {
+  ResultFuture<void> rateProduct(
+    String productId,
+    double rating, {
+    String? review,
+  }) async {
     try {
       if (!await networkInfo.isConnected) {
         return const Left(NetworkFailure('No internet connection'));
@@ -98,8 +107,37 @@ class ProductRepositoryImpl implements ProductRepository {
         return const Left(UnauthorizedFailure('No authentication token'));
       }
 
-      await remoteDataSource.rateProduct(productId, rating, token);
+      await remoteDataSource.rateProduct(
+        productId,
+        rating,
+        token,
+        review: review,
+      );
       return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<List<RatingEntity>> getProductReviews(String productId) async {
+    try {
+      if (!await networkInfo.isConnected) {
+        return const Left(NetworkFailure('No internet connection'));
+      }
+
+      final token = await _getToken();
+      if (token == null) {
+        return const Left(UnauthorizedFailure('No authentication token'));
+      }
+
+      final reviews = await remoteDataSource.getProductReviews(
+        productId,
+        token,
+      );
+      return Right(reviews);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
