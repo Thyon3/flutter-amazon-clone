@@ -3,11 +3,14 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import { generalLimiter, authLimiter, searchLimiter, productCreationLimiter, orderLimiter, ratingLimiter } from "./middlewares/rateLimiter";
 import authRouter from "./routes/auth";
 import adminRouter from "./routes/admin";
 import productRouter from "./routes/product";
 import userRouter from "./routes/user";
 import offersRouter from "./routes/offers";
+import analyticsRouter from "./routes/analytics";
+import emailMarketingRouter from "./routes/emailMarketing";
 
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 
@@ -19,11 +22,18 @@ const DB = `mongodb+srv://${userName}:${password}@cluster0.fkliyeh.mongodb.net/f
 
 app.use(cors());
 app.use(express.json());
-app.use(authRouter);
-app.use(adminRouter);
-app.use(productRouter);
-app.use(userRouter);
-app.use(offersRouter);
+
+// Apply general rate limiting to all API routes
+app.use('/api/', generalLimiter);
+
+// Apply specific rate limiting to different route groups
+app.use('/api/', authLimiter, authRouter);
+app.use('/admin/', productCreationLimiter, adminRouter);
+app.use('/api/products', searchLimiter, productRouter);
+app.use('/api/', orderLimiter, userRouter);
+app.use('/api/', ratingLimiter, offersRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/email', emailMarketingRouter);
 
 mongoose
   .connect(DB)
