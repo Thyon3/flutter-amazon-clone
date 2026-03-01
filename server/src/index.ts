@@ -11,6 +11,7 @@ import userRouter from "./routes/user";
 import offersRouter from "./routes/offers";
 import analyticsRouter from "./routes/analytics";
 import emailMarketingRouter from "./routes/emailMarketing";
+import priceAlertsRouter from "./routes/priceAlerts";
 
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 
@@ -34,6 +35,7 @@ app.use('/api/', orderLimiter, userRouter);
 app.use('/api/', ratingLimiter, offersRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/email', emailMarketingRouter);
+app.use('/api/price-alerts', priceAlertsRouter);
 
 mongoose
   .connect(DB)
