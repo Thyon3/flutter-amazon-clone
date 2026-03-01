@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_amazon_clone_bloc/core/widgets/bottom_nav_bar.dart';
 import 'package:flutter_amazon_clone_bloc/features/home/presentation/pages/home_screen.dart';
 import 'package:flutter_amazon_clone_bloc/features/cart/presentation/pages/cart_screen.dart';
+import 'package:flutter_amazon_clone_bloc/features/menu/presentation/pages/menu_screen.dart';
+import 'package:flutter_amazon_clone_bloc/features/account/presentation/pages/account_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,9 +17,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const AccountPlaceholderScreen(),
+    const AccountScreen(),
     const CartScreen(),
-    const MenuPlaceholderScreen(),
+    const MenuScreen(),
   ];
 
   @override
@@ -31,39 +33,6 @@ class _MainScreenState extends State<MainScreen> {
             _currentIndex = index;
           });
         },
-      ),
-    );
-  }
-}
-
-// Placeholder screens
-class AccountPlaceholderScreen extends StatelessWidget {
-  const AccountPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Account'),
-      ),
-      body: const Center(
-        child: Text('Account Screen - Coming Soon'),
-      ),
-    );
-  }
-}
-
-class MenuPlaceholderScreen extends StatelessWidget {
-  const MenuPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Menu'),
-      ),
-      body: const Center(
-        child: Text('Menu Screen - Coming Soon'),
       ),
     );
   }
