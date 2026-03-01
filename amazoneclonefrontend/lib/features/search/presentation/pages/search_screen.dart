@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/core/theme/app_colors.dart';
 import 'package:flutter_amazon_clone_bloc/core/utils/show_snackbar.dart';
+import 'package:flutter_amazon_clone_bloc/core/widgets/voice_search_button.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/features/product/presentation/widgets/product_card.dart';
 import 'package:flutter_amazon_clone_bloc/features/search/domain/models/search_filters.dart';
@@ -34,6 +35,16 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       );
     }
+  }
+
+  void _onVoiceResult(String result) {
+    _searchController.text = result;
+    _performSearch();
+    showSuccessSnackBar(context, 'Voice search completed');
+  }
+
+  void _onVoiceError(String error) {
+    showErrorSnackBar(context, error);
   }
 
   void _showFilterBottomSheet() {
@@ -94,6 +105,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
                   ),
+                VoiceSearchButton(
+                  onVoiceResult: _onVoiceResult,
+                  onError: _onVoiceError,
+                ),
                 IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: _performSearch,
