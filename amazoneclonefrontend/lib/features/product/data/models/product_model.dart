@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_amazon_clone_bloc/features/product/domain/entities/product_entity.dart';
+import '../../domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
   const ProductModel({
@@ -37,10 +37,7 @@ class ProductModel extends ProductEntity {
       price: map['price']?.toDouble() ?? 0.0,
       ratings: map['ratings'] != null
           ? List<RatingModel>.from(
-              map['ratings']?.map(
-                (x) => RatingModel.fromMap(x),
-              ) ??
-                  [],
+              map['ratings']?.map((x) => RatingModel.fromMap(x)) ?? [],
             )
           : [],
     );
@@ -78,19 +75,18 @@ class RatingModel extends RatingEntity {
   const RatingModel({
     required super.userId,
     required super.rating,
+    super.review,
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'rating': rating,
-    };
+    return {'userId': userId, 'rating': rating, 'review': review};
   }
 
   factory RatingModel.fromMap(Map<String, dynamic> map) {
     return RatingModel(
       userId: map['userId'] ?? '',
       rating: map['rating']?.toDouble() ?? 0.0,
+      review: map['review'],
     );
   }
 

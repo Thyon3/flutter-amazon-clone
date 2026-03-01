@@ -23,15 +23,15 @@ class ProductEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        quantity,
-        images,
-        category,
-        price,
-        ratings,
-      ];
+    id,
+    name,
+    description,
+    quantity,
+    images,
+    category,
+    price,
+    ratings,
+  ];
 
   double get averageRating {
     if (ratings.isEmpty) return 0.0;
@@ -45,12 +45,10 @@ class ProductEntity extends Equatable {
 class RatingEntity extends Equatable {
   final String userId;
   final double rating;
+  final String? review;
 
-  const RatingEntity({
-    required this.userId,
-    required this.rating,
-  });
+  const RatingEntity({required this.userId, required this.rating, this.review});
 
   @override
-  List<Object?> get props => [userId, rating];
+  List<Object?> get props => [userId, rating, review];
 }
