@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter_amazon_clone_bloc/core/theme/app_colors.dart';
-import 'package:flutter_amazon_clone_bloc/core/widgets/custom_button.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/domain/entities/product_entity.dart';
-import 'package:flutter_amazon_clone_bloc/features/product/presentation/widgets/rating_stars.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/custom_text_field.dart';
+import '../../domain/entities/product_entity.dart';
+import '../bloc/product_bloc.dart';
+import '../widgets/rating_stars.dart';
+import '../widgets/review_widget.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductEntity product;
 
-  const ProductDetailsScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailsScreen({super.key, required this.product});
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -20,6 +21,92 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int _currentImageIndex = 0;
+  final TextEditingController _reviewController = TextEditingController();
+  double _userRating = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductBloc>().add(
+      FetchProductReviewsEvent(widget.product.id),
+    );
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
+  }
+
+  void _showRatingDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Rate this product'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        onPressed: () {
+                          setDialogState(() {
+                            _userRating = index + 1.0;
+                          });
+                        },
+                        icon: Icon(
+                          index < _userRating ? Icons.star : Icons.star_border,
+                          color: AppColors.starColor,
+                          size: 32,
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    controller: _reviewController,
+                    hintText: 'Write your review (optional)',
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _userRating == 0
+                      ? null
+                      : () {
+                          context.read<ProductBloc>().add(
+                            RateProductEvent(
+                              productId: widget.product.id,
+                              rating: _userRating,
+                              review: _reviewController.text.trim(),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.secondaryColor,
+                  ),
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +134,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         child: CachedNetworkImage(
                           imageUrl: image,
                           fit: BoxFit.contain,
-                          placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) =>
                               const Icon(Icons.error),
                         ),
@@ -69,7 +155,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   // Image Indicators
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: widget.product.images.asMap().entries.map((entry) {
+                    children: widget.product.images.asMap().entries.map((
+                      entry,
+                    ) {
                       return Container(
                         width: 8,
                         height: 8,
@@ -114,10 +202,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       const SizedBox(width: 8),
                       Text(
                         '${widget.product.averageRating.toStringAsFixed(1)} (${widget.product.ratings.length} ratings)',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -163,10 +248,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   // Description
                   const Text(
                     'Description',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -184,13 +266,83 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       const Text(
                         'Category: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(widget.product.category),
                     ],
                   ),
+                  const SizedBox(height: 30),
+
+                  // Reviews Section
+                  const Divider(thickness: 1),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Customer Reviews',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _showRatingDialog,
+                        child: const Text('Write a review'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  BlocConsumer<ProductBloc, ProductState>(
+                    listener: (context, state) {
+                      if (state is ProductRated) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Review submitted successfully!'),
+                          ),
+                        );
+                        _reviewController.clear();
+                        _userRating = 0;
+                        context.read<ProductBloc>().add(
+                          FetchProductReviewsEvent(widget.product.id),
+                        );
+                      } else if (state is ProductError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is ProductLoading) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else if (state is ProductReviewsLoaded) {
+                        if (state.reviews.isEmpty) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Text(
+                              'No reviews yet. Be the first to rate!',
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.reviews.length,
+                          itemBuilder: (context, index) {
+                            return ReviewWidget(rating: state.reviews[index]);
+                          },
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
