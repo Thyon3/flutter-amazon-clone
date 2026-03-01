@@ -40,10 +40,15 @@ dependencies:
   intl: ^0.19.0
   flutter_dotenv: ^5.1.0
   
+  # Internationalization
+  flutter_localizations:
+    sdk: flutter
+  
   # File & Media
   file_picker: ^6.0.0
   camera_camera: ^3.0.0
   cloudinary_public: ^0.21.0
+  speech_to_text: ^6.6.0
   
   # Payment
   pay: ^1.1.2

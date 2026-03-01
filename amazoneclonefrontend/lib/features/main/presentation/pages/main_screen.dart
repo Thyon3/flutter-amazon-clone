@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/core/widgets/bottom_nav_bar.dart';
 import 'package:flutter_amazon_clone_bloc/core/widgets/theme_toggle_button.dart';
+import 'package:flutter_amazon_clone_bloc/core/widgets/language_selector.dart';
 import 'package:flutter_amazon_clone_bloc/core/theme/theme_manager.dart';
 import 'package:flutter_amazon_clone_bloc/features/comparison/presentation/bloc/comparison_bloc.dart';
 import 'package:flutter_amazon_clone_bloc/features/comparison/presentation/pages/comparison_screen.dart';
@@ -84,6 +85,7 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
+          const LanguageSelector(),
           Consumer<ThemeManager>(
             builder: (context, themeManager, child) {
               return ThemeToggleButton(themeManager: themeManager);
