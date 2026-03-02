@@ -66,6 +66,11 @@ dependencies:
   arkit_plugin: ^0.1.0
   model_viewer: ^1.2.0
   
+  # Social Login
+  google_sign_in: ^6.2.1
+  flutter_facebook_auth: ^6.0.4
+  sign_in_with_apple: ^5.0.0
+  
   # Icons
   cupertino_icons: ^1.0.2
 
