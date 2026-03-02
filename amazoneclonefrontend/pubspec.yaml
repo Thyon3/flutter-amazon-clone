@@ -56,6 +56,11 @@ dependencies:
   # Charts
   syncfusion_flutter_charts: ^26.2.9
   
+  # Notifications
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^16.3.2
+  firebase_core: ^2.24.2
+  
   # Icons
   cupertino_icons: ^1.0.2
 
