@@ -61,6 +61,11 @@ dependencies:
   flutter_local_notifications: ^16.3.2
   firebase_core: ^2.24.2
   
+  # AR & 3D
+  arcore_flutter_plugin: ^0.1.0
+  arkit_plugin: ^0.1.0
+  model_viewer: ^1.2.0
+  
   # Icons
   cupertino_icons: ^1.0.2
 
